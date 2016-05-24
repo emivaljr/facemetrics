@@ -1,20 +1,19 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import { createContainer } from 'meteor/react-meteor-data';
+
+import { Tasks } from '../api/tasks.js';
+
+import { Posts } from '../api/posts.js';
 
 import Task from './Task.jsx';
 
-// App component - represents the whole app
-export default class App extends Component {
-  getTasks() {
-    return [
-      { _id: 1, text: 'This is task 1' },
-      { _id: 2, text: 'This is task 2' },
-      { _id: 3, text: 'This is task 3' },
-    ];
-  }
+import Post from './Post.jsx';
 
-  renderTasks() {
-    return this.getTasks().map((task) => (
-      <Task key={task._id} task={task} />
+// App component - represents the whole app
+class App extends Component {
+  renderPosts() {
+    return this.props.posts.map((post) => (
+      <Post key={post._id} post={post} />
     ));
   }
 
@@ -25,10 +24,31 @@ export default class App extends Component {
           <h1>Todo List</h1>
         </header>
 
-        <ul>
-          {this.renderTasks()}
-        </ul>
+        <table>
+          <thead>
+          <tr>
+            <th>Post</th>
+            <th>Curtidas</th>
+            <th>Comentarios</th>
+            <th>Visualizacoes</th>
+            <th>Criado em</th>
+          </tr>
+          </thead>
+          <tbody>
+          {this.renderPosts()}
+          </tbody>
+        </table>
       </div>
     );
   }
 }
+
+App.propTypes = {
+  posts: PropTypes.array.isRequired,
+};
+
+export default createContainer(() => {
+  return {
+    posts: Posts.find({}).fetch(),
+  };
+}, App);
